@@ -171,4 +171,55 @@ class InteractiveModeControllerTest {
 
         assertFalse(result)
     }
+
+    @Test
+    fun `should detect win when all letters guessed`() {
+
+        val gameState = createGameState(word = "КОТ").copy(
+            mask = "КОТ",
+            health = 5
+        )
+        interactiveModeController.setInteractiveModeState(gameState)
+
+        interactiveModeController.handlerEnteredLetter('X')
+
+        assertTrue(interactiveModeController.getInteractiveModeState() is InteractiveModeUiState.Win)
+    }
+
+    @Test
+    fun `should detect game over when health reaches zero`() {
+
+        val gameState = createGameState(word = "КОТ", health = 1)
+        interactiveModeController.setInteractiveModeState(gameState)
+
+        interactiveModeController.handlerEnteredLetter('П')
+
+        assertTrue(interactiveModeController.getInteractiveModeState() is InteractiveModeUiState.Fail)
+    }
+
+    @Test
+    fun `complete game scenario - win`() {
+
+        val gameState = createGameState(word = "КОТ")
+        interactiveModeController.setInteractiveModeState(gameState)
+
+        interactiveModeController.handlerEnteredLetter('К')
+        interactiveModeController.handlerEnteredLetter('О')
+        interactiveModeController.handlerEnteredLetter('Т')
+
+        assertTrue(interactiveModeController.getInteractiveModeState() is InteractiveModeUiState.Win)
+    }
+
+    @Test
+    fun `complete game scenario - game over`() {
+
+        val gameState = createGameState(word = "КОТ", health = 3)
+        interactiveModeController.setInteractiveModeState(gameState)
+
+        interactiveModeController.handlerEnteredLetter('П')
+        interactiveModeController.handlerEnteredLetter('Р')
+        interactiveModeController.handlerEnteredLetter('И')
+
+        assertTrue(interactiveModeController.getInteractiveModeState() is InteractiveModeUiState.Fail)
+    }
 }
