@@ -97,7 +97,9 @@ class PlayzoneScreen(
             PlayzoneUiState.Process(
                 word = word,
                 category = category.value,
-                level = level
+                level = level,
+                health = 7,
+                hint = null
             )
         )
     }
@@ -105,14 +107,39 @@ class PlayzoneScreen(
     private fun handleProcessState(gameState: PlayzoneUiState.Process) {
         val healthDisplay = playzoneLogic.getHealthDisplay()
 
+        val hintText = if (gameState.hint != null) {
+            val hintFrame = "-".repeat(11 + gameState.hint.length)
+            hintFrame + "\nПодсказка: ${gameState.hint}\n" + hintFrame
+        } else {
+            "Для получения подсказки введите -> 'HELP' или 'SOS'"
+        }
+
         consoleGameView.showGameState(
             mask = gameState.mask,
             health = gameState.health,
             healthDisplay = healthDisplay,
-            usedLetters = gameState.usedLetters
+            usedLetters = gameState.usedLetters,
+            hintText = hintText
         )
 
         val input = consoleGameView.userInput()
+
+        if (input.equals("help", ignoreCase = true) || input.equals("sos", ignoreCase = true)) {
+            consoleGameView.clearScreen()
+
+            when {
+                gameState.hint != null -> {
+                    println(">> Подсказка уже на экране! <<")
+                }
+                else -> {
+                    val hintActivated = playzoneLogic.useHint()
+                    if (!hintActivated) {
+                        consoleGameView.showNoHintAvailable()
+                    }
+                }
+            }
+            return
+        }
 
         if (validateInput(input)) {
             val letter = input.first().uppercaseChar()

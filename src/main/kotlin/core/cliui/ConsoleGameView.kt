@@ -130,11 +130,25 @@ class ConsoleGameView : GameView {
         println(">> Не удалось распознать команду! Повторите, пожалуйста. <<")
     }
 
+    override fun showHint(description: String) {
+        println(description)
+    }
+
+    override fun showNoHintAvailable() {
+        println("\nК сожалению, для этого слова нет подсказки.\n")
+    }
+
     override fun showUsedLetter(letter: Char) {
         println(">> Буква \"${letter.uppercase()}\" уже использована! <<")
     }
 
-    override fun showGameState(mask: String, health: Int, healthDisplay: String, usedLetters: Set<Char>) {
+    override fun showGameState(
+        mask: String,
+        health: Int,
+        healthDisplay: String,
+        usedLetters: Set<Char>,
+        hintText: String
+    ) {
         val gallows = getNewGallows(health)
 
         print(
@@ -145,7 +159,10 @@ class ConsoleGameView : GameView {
 
 Загаданное слово: ${mask.uppercase().split("").joinToString(" ")}
 
-Использованные буквы: ${usedLetters.joinToString(" ")}
+Использованные буквы: [${usedLetters.joinToString(" ")}]
+
+$hintText
+
 Введите букву:
 >>
         """.trimIndent()

@@ -12,10 +12,11 @@ fun main(args: Array<String>) {
     if (args.size == 2) {
         processNonInteractiveMode(args[0], args[1])
     } else {
+        val hangmanDb = HangmanDb()
 
         val game = PlayzoneScreen(
             hangmanDb = HangmanDb(),
-            playzoneLogic = PlayzoneLogic(),
+            playzoneLogic = PlayzoneLogic(hangmanDb = hangmanDb),
             consoleGameView = ConsoleGameView()
         )
 
