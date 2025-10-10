@@ -3,11 +3,13 @@ import dev.kiryao.feature.playzone.InteractiveModeController
 import dev.kiryao.feature.playzone.InteractiveModeUiState
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
+import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertAll
 import org.mockito.Mockito
+import org.mockito.kotlin.whenever
 
 class InteractiveModeControllerTest {
 
@@ -125,6 +127,47 @@ class InteractiveModeControllerTest {
         interactiveModeController.setInteractiveModeState(InteractiveModeUiState.Menu)
 
         val result = interactiveModeController.checkUsedLetters('К')
+
+        assertFalse(result)
+    }
+
+    @Test
+    fun `useHint should return true and set hint when description exists`() {
+
+        val gameState = createGameState(word = "КОТ")
+        interactiveModeController.setInteractiveModeState(gameState)
+
+        whenever(hangmanDb.getWordDescription("КОТ")).thenReturn("Домашнее животное")
+
+        val result = interactiveModeController.useHint()
+
+        assertTrue(result)
+        val newState = interactiveModeController.getInteractiveModeState() as InteractiveModeUiState.Process
+        assertEquals("Домашнее животное", newState.hint)
+    }
+
+    @Test
+    fun `useHint should return false when no description exists`() {
+
+        val gameState = createGameState(word = "КОТ")
+        interactiveModeController.setInteractiveModeState(gameState)
+
+        whenever(hangmanDb.getWordDescription("КОТ")).thenReturn(null)
+
+        val result = interactiveModeController.useHint()
+
+        assertFalse(result)
+        val newState = interactiveModeController.getInteractiveModeState() as InteractiveModeUiState.Process
+        assertNull(newState.hint)
+    }
+
+    @Test
+    fun `useHint should return false when hint already used`() {
+
+        val gameState = createGameState(word = "КОТ").copy(hint = "Уже использовано")
+        interactiveModeController.setInteractiveModeState(gameState)
+
+        val result = interactiveModeController.useHint()
 
         assertFalse(result)
     }
