@@ -2,15 +2,44 @@ package dev.kiryao
 
 //TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
 // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
-fun main() {
-    val name = "Kotlin"
-    //TIP Press <shortcut actionId="ShowIntentionActions"/> with your caret at the highlighted text
-    // to see how IntelliJ IDEA suggests fixing it.
-    println("Hello, " + name + "!")
+import kotlin.system.exitProcess
 
-    for (i in 1..5) {
-        //TIP Press <shortcut actionId="Debug"/> to start debugging your code. We have set one <icon src="AllIcons.Debugger.Db_set_breakpoint"/> breakpoint
-        // for you, but you can always add more by pressing <shortcut actionId="ToggleLineBreakpoint"/>.
-        println("i = $i")
+const val HIDDEN_SYMBOL = '*'
+
+fun main(args: Array<String>) {
+    if (args.size != 2) {
+        println("Unknown word")
+        exitProcess(1)
     }
+
+    val (targetWord, userInput) = args
+
+    val normalizedTarget = targetWord.trim().lowercase()
+    val normalizedInput = userInput.trim().lowercase()
+
+    if (normalizedTarget == normalizedInput) {
+        println("$normalizedInput;POS")
+        exitProcess(0)
+    }
+
+    val result = CharArray(normalizedTarget.length) { HIDDEN_SYMBOL }
+
+    for (char in normalizedInput) {
+        if (char in normalizedTarget) {
+            for (i in normalizedTarget.indices) {
+                if(normalizedTarget[i] == char && result[i] == HIDDEN_SYMBOL) {
+                    result.openChar(char = char, index = i)
+                }
+            }
+        }
+    }
+
+    val output = String(result)
+    val messageResult = if (output == normalizedTarget) "POS" else "NEG"
+    println("$output;$messageResult")
+    exitProcess(0)
+}
+
+private fun CharArray.openChar(char: Char, index: Int) {
+    this[index] = char
 }
