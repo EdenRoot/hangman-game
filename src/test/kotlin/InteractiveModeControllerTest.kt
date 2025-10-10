@@ -2,6 +2,7 @@ import dev.kiryao.core.data.HangmanDb
 import dev.kiryao.feature.playzone.InteractiveModeController
 import dev.kiryao.feature.playzone.InteractiveModeUiState
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -94,5 +95,37 @@ class InteractiveModeControllerTest {
 
         val processState = newState as InteractiveModeUiState.Process
         assertEquals("К__", processState.mask)
+    }
+
+    @Test
+    fun `checkUsedLetters should return true for used letter`() {
+
+        val gameState = createGameState(word = "КОТ").copy(usedLetters = setOf('К', 'О'))
+        interactiveModeController.setInteractiveModeState(gameState)
+
+        val result = interactiveModeController.checkUsedLetters('К')
+
+        assertTrue(result)
+    }
+
+    @Test
+    fun `checkUsedLetters should return false for new letter`() {
+
+        val gameState = createGameState(word = "КОТ").copy(usedLetters = setOf('К', 'О'))
+        interactiveModeController.setInteractiveModeState(gameState)
+
+        val result = interactiveModeController.checkUsedLetters('Т')
+
+        assertFalse(result)
+    }
+
+    @Test
+    fun `checkUsedLetters should return false when not in Process state`() {
+
+        interactiveModeController.setInteractiveModeState(InteractiveModeUiState.Menu)
+
+        val result = interactiveModeController.checkUsedLetters('К')
+
+        assertFalse(result)
     }
 }
