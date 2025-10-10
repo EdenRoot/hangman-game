@@ -2,9 +2,9 @@ package dev.kiryao
 
 import dev.kiryao.core.cliui.ConsoleGameView
 import dev.kiryao.core.data.HangmanDb
-import dev.kiryao.feature.nonInteractive.NonInteractiveMode.processNonInteractiveMode
-import dev.kiryao.feature.playzone.PlayzoneLogic
-import dev.kiryao.feature.playzone.PlayzoneScreen
+import dev.kiryao.feature.nonInteractive.NonInteractiveModeController.processNonInteractiveMode
+import dev.kiryao.feature.playzone.InteractiveModeController
+import dev.kiryao.feature.playzone.InteractiveModeScreen
 
 const val HIDDEN_SYMBOL = '*'
 
@@ -13,13 +13,14 @@ fun main(args: Array<String>) {
         processNonInteractiveMode(args[0], args[1])
     } else {
         val hangmanDb = HangmanDb()
+        val interactiveModeController = InteractiveModeController(hangmanDb = hangmanDb)
 
-        val game = PlayzoneScreen(
-            hangmanDb = HangmanDb(),
-            playzoneLogic = PlayzoneLogic(hangmanDb = hangmanDb),
+        val game = InteractiveModeScreen(
+            hangmanDb = hangmanDb,
+            interactiveModeController = interactiveModeController,
             consoleGameView = ConsoleGameView()
         )
 
-        game.loop()
+        game.play()
     }
 }

@@ -5,24 +5,24 @@ import dev.kiryao.core.data.HangmanDb
 import dev.kiryao.core.model.DifficultyLevel
 import dev.kiryao.core.model.PathFile
 
-class PlayzoneScreen(
+class InteractiveModeScreen(
     private val hangmanDb: HangmanDb,
-    private val playzoneLogic: PlayzoneLogic,
+    private val interactiveModeController: InteractiveModeController,
     private val consoleGameView: ConsoleGameView
 ) {
     private var isPlayGame = true
     private var selectedCategory: PathFile? = null
     private var selectedLevel: DifficultyLevel? = null
 
-    fun loop() {
+    fun play() {
         do {
-            when (val gameState = playzoneLogic.getPlayzoneState()) {
-                is PlayzoneUiState.Menu -> handleMenuState()
-                is PlayzoneUiState.Category -> handleCategoryState()
-                is PlayzoneUiState.Difficulty -> handleDifficultyState()
-                is PlayzoneUiState.Process -> handleProcessState(gameState)
-                is PlayzoneUiState.Win -> handleWinState(gameState)
-                is PlayzoneUiState.GameOver -> handleGameOverState(gameState)
+            when (val gameState = interactiveModeController.getInteractiveModeState()) {
+                is InteractiveModeUiState.Menu -> handleMenuState()
+                is InteractiveModeUiState.Category -> handleCategoryState()
+                is InteractiveModeUiState.Difficulty -> handleDifficultyState()
+                is InteractiveModeUiState.Process -> handleProcessState(gameState)
+                is InteractiveModeUiState.Win -> handleWinState(gameState)
+                is InteractiveModeUiState.Fail -> handleGameOverState(gameState)
             }
         } while (isPlayGame)
     }
@@ -35,7 +35,7 @@ class PlayzoneScreen(
             when (consoleGameView.userInput()) {
                 "" -> {
                     consoleGameView.clearScreen()
-                    playzoneLogic.setPlayzoneState(PlayzoneUiState.Category)
+                    interactiveModeController.setInteractiveModeState(InteractiveModeUiState.Category)
                     isExitMenu = true
                 }
                 "exit" -> {
@@ -67,7 +67,7 @@ class PlayzoneScreen(
         } while (!correctInput)
 
         consoleGameView.clearScreen()
-        playzoneLogic.setPlayzoneState(PlayzoneUiState.Difficulty)
+        interactiveModeController.setInteractiveModeState(InteractiveModeUiState.Difficulty)
     }
 
     private fun handleDifficultyState() {
@@ -93,8 +93,8 @@ class PlayzoneScreen(
         val level = selectedLevel ?: DifficultyLevel.random()
         val word = hangmanDb.getRandomWord(category, level)
 
-        playzoneLogic.setPlayzoneState(
-            PlayzoneUiState.Process(
+        interactiveModeController.setInteractiveModeState(
+            InteractiveModeUiState.Process(
                 word = word,
                 category = category.value,
                 level = level,
@@ -104,8 +104,8 @@ class PlayzoneScreen(
         )
     }
 
-    private fun handleProcessState(gameState: PlayzoneUiState.Process) {
-        val healthDisplay = playzoneLogic.getHealthDisplay()
+    private fun handleProcessState(gameState: InteractiveModeUiState.Process) {
+        val healthDisplay = interactiveModeController.getHealthDisplay()
 
         val hintText = if (gameState.hint != null) {
             val hintFrame = "-".repeat(11 + gameState.hint.length)
@@ -132,7 +132,7 @@ class PlayzoneScreen(
                     println(">> Подсказка уже на экране! <<")
                 }
                 else -> {
-                    val hintActivated = playzoneLogic.useHint()
+                    val hintActivated = interactiveModeController.useHint()
                     if (!hintActivated) {
                         consoleGameView.showNoHintAvailable()
                     }
@@ -145,10 +145,10 @@ class PlayzoneScreen(
             val letter = input.first().uppercaseChar()
             consoleGameView.clearScreen()
 
-            if (playzoneLogic.checkUsedLetters(letter)) {
+            if (interactiveModeController.checkUsedLetters(letter)) {
                 consoleGameView.showUsedLetter(letter)
             } else {
-                playzoneLogic.handlerEnteredLetter(letter)
+                interactiveModeController.handlerEnteredLetter(letter)
             }
         } else {
             consoleGameView.clearScreen()
@@ -156,7 +156,7 @@ class PlayzoneScreen(
         }
     }
 
-    private fun handleWinState(gameState: PlayzoneUiState.Win) {
+    private fun handleWinState(gameState: InteractiveModeUiState.Win) {
         var correctInput = false
         consoleGameView.showWin(word = gameState.word)
 
@@ -165,7 +165,7 @@ class PlayzoneScreen(
                 "" -> {
                     consoleGameView.clearScreen()
                     resetSelections()
-                    playzoneLogic.setPlayzoneState(PlayzoneUiState.Menu)
+                    interactiveModeController.setInteractiveModeState(InteractiveModeUiState.Menu)
                     correctInput = true
                 }
                 "exit" -> {
@@ -180,7 +180,7 @@ class PlayzoneScreen(
         } while (!correctInput)
     }
 
-    private fun handleGameOverState(gameState: PlayzoneUiState.GameOver) {
+    private fun handleGameOverState(gameState: InteractiveModeUiState.Fail) {
         var correctInput = false
         consoleGameView.showGameOver(word = gameState.word)
 
@@ -189,7 +189,7 @@ class PlayzoneScreen(
                 "" -> {
                     consoleGameView.clearScreen()
                     resetSelections()
-                    playzoneLogic.setPlayzoneState(PlayzoneUiState.Menu)
+                    interactiveModeController.setInteractiveModeState(InteractiveModeUiState.Menu)
                     correctInput = true
                 }
                 "exit" -> {

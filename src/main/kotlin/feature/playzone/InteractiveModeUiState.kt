@@ -2,10 +2,10 @@ package dev.kiryao.feature.playzone
 
 import dev.kiryao.core.model.DifficultyLevel
 
-sealed class PlayzoneUiState {
-    object Menu : PlayzoneUiState()
-    object Category : PlayzoneUiState()
-    object Difficulty : PlayzoneUiState()
+sealed class InteractiveModeUiState {
+    object Menu : InteractiveModeUiState()
+    object Category : InteractiveModeUiState()
+    object Difficulty : InteractiveModeUiState()
 
     data class Process(
         val word: String,
@@ -15,8 +15,8 @@ sealed class PlayzoneUiState {
         val health: Int = 7,
         val usedLetters: Set<Char> = emptySet(),
         val hint: String? = null
-    ) : PlayzoneUiState()
+    ) : InteractiveModeUiState()
 
-    data class Win(val word: String) : PlayzoneUiState()
-    data class GameOver(val word: String) : PlayzoneUiState()
+    data class Win(val word: String) : InteractiveModeUiState()
+    data class Fail(val word: String) : InteractiveModeUiState()
 }

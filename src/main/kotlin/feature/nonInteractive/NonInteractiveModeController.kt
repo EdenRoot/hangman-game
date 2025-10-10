@@ -2,7 +2,7 @@ package dev.kiryao.feature.nonInteractive
 
 import kotlin.system.exitProcess
 
-object NonInteractiveMode {
+object NonInteractiveModeController {
     private const val HIDDEN_SYMBOL = '*'
 
     fun processNonInteractiveMode(targetWord: String, userInput: String) {
