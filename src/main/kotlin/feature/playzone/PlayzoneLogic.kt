@@ -1,7 +1,10 @@
 package dev.kiryao.feature.playzone
 
+import dev.kiryao.core.data.HangmanDb
+
 class PlayzoneLogic(
-    private var _state: PlayzoneUiState = PlayzoneUiState.Menu
+    private var _state: PlayzoneUiState = PlayzoneUiState.Menu,
+    private val hangmanDb: HangmanDb
 ) {
 
     fun setPlayzoneState(state: PlayzoneUiState) {
@@ -34,12 +37,16 @@ class PlayzoneLogic(
         return state is PlayzoneUiState.Process && state.usedLetters.contains(letter)
     }
 
-    private fun checkGameState(newState: PlayzoneUiState.Process) {
-        _state = when {
-            isWin(newState) -> PlayzoneUiState.Win(word = newState.word)
-            isGameOver(newState) -> PlayzoneUiState.GameOver(word = newState.word)
-            else -> newState
+    fun useHint(): Boolean {
+        val state = _state
+        if (state is PlayzoneUiState.Process && state.hint == null) {
+            val description = hangmanDb.getWordDescription(state.word)
+            if (description != null) {
+                _state = state.copy(hint = description)
+                return true
+            }
         }
+        return false
     }
 
     fun getHealthDisplay(): String {
@@ -49,6 +56,14 @@ class PlayzoneLogic(
             "${state.health} $hearts"
         } else {
             "❤".repeat(7) + " 7"
+        }
+    }
+
+    private fun checkGameState(newState: PlayzoneUiState.Process) {
+        _state = when {
+            isWin(newState) -> PlayzoneUiState.Win(word = newState.word)
+            isGameOver(newState) -> PlayzoneUiState.GameOver(word = newState.word)
+            else -> newState
         }
     }
 
