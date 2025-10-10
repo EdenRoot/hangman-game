@@ -12,6 +12,8 @@ class HangmanDb() {
     private val wordsByCategoryAndDifficulty =
         mutableMapOf<PathFile, Map<DifficultyLevel, List<String>>>()
 
+    private val wordDescriptions = mutableMapOf<String, String>()
+
     init {
         PathFile.values().forEach { pathFile ->
             loadCategory(pathFile)
@@ -28,6 +30,10 @@ class HangmanDb() {
             val allWords = getAllWordsForCategory(category)
             if (allWords.isNotEmpty()) allWords.random() else "ошибка"
         }
+    }
+
+    fun getWordDescription(word: String): String? {
+        return wordDescriptions[word]
     }
 
     private fun loadCategory(pathFile: PathFile) {
@@ -58,7 +64,12 @@ class HangmanDb() {
                     .filter { it.isNotEmpty() }
                     .map { line ->
                         val parts = line.split(":", limit = 2)
-                        parts[0].trim()
+                        val word = parts[0].trim()
+
+                        if (parts.size > 1) {
+                            wordDescriptions[word] = parts[1].trim()
+                        }
+                        word
                     }
                     .filter { it.isNotEmpty() }
             }
