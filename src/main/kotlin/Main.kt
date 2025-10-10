@@ -6,8 +6,6 @@ import dev.kiryao.feature.nonInteractive.NonInteractiveModeController.processNon
 import dev.kiryao.feature.playzone.InteractiveModeController
 import dev.kiryao.feature.playzone.InteractiveModeScreen
 
-const val HIDDEN_SYMBOL = '*'
-
 fun main(args: Array<String>) {
     if (args.size == 2) {
         processNonInteractiveMode(args[0], args[1])
