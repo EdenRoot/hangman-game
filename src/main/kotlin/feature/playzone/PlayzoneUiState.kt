@@ -1,5 +1,7 @@
 package dev.kiryao.feature.playzone
 
+import dev.kiryao.core.model.DifficultyLevel
+
 sealed class PlayzoneUiState {
     object Menu : PlayzoneUiState()
     object Category : PlayzoneUiState()
@@ -8,7 +10,7 @@ sealed class PlayzoneUiState {
     data class Process(
         val word: String,
         val category: String? = null,
-        val level: String? = null,
+        val level: DifficultyLevel? = null,
         val mask: String = word.replace(Regex("[А-яЁё]"), "_"),
         val health: Int = 7,
         val usedLetters: Set<Char> = emptySet()
