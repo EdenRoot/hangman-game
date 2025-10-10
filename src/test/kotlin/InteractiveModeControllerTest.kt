@@ -222,4 +222,25 @@ class InteractiveModeControllerTest {
 
         assertTrue(interactiveModeController.getInteractiveModeState() is InteractiveModeUiState.Fail)
     }
+
+    @Test
+    fun `getHealthDisplay should show correct hearts and number`() {
+
+        val gameState = createGameState(word = "КОТ", health = 3)
+        interactiveModeController.setInteractiveModeState(gameState)
+
+        val display = interactiveModeController.getHealthDisplay()
+
+        assertEquals("3 ❤❤❤", display)
+    }
+
+    @Test
+    fun `getHealthDisplay should show full health when not in Process state`() {
+
+        interactiveModeController.setInteractiveModeState(InteractiveModeUiState.Menu)
+
+        val display = interactiveModeController.getHealthDisplay()
+
+        assertEquals("❤❤❤❤❤❤❤ 7", display)
+    }
 }
