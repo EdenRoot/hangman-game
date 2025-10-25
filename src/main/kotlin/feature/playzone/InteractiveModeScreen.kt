@@ -165,7 +165,7 @@ class InteractiveModeScreen(
                 "" -> {
                     consoleGameView.clearScreen()
                     resetSelections()
-                    interactiveModeController.setInteractiveModeState(InteractiveModeUiState.Menu)
+                    interactiveModeController.setInteractiveModeState(InteractiveModeUiState.Category)
                     correctInput = true
                 }
                 "exit" -> {
@@ -189,7 +189,7 @@ class InteractiveModeScreen(
                 "" -> {
                     consoleGameView.clearScreen()
                     resetSelections()
-                    interactiveModeController.setInteractiveModeState(InteractiveModeUiState.Menu)
+                    interactiveModeController.setInteractiveModeState(InteractiveModeUiState.Category)
                     correctInput = true
                 }
                 "exit" -> {
